@@ -1,0 +1,26 @@
+.vscode/
+/vendor/*
+/bin
+/data/*
+*/log/*
+*.log
+!mock/doc.go
+mock/*
+internal/mock/*
+/.idea
+
+# ignore generated golang code **/*.gen.go
+**/*.gen_test.go
+
+# ignore easyjson generated code
+*_easyjson.go
+
+# reduce noise when commit
+manifest.yaml
+
+.DS_Store
+localfiles/
+.editorconfig
+*_stringer.go
+/data
+/logs
