@@ -4,13 +4,13 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"git.garena.com/shopee/listing/common/utkit/internal/core"
+	"github.com/robertsong9972/utkit/internal/core"
 	"io"
 	"os"
 	"strings"
 
-	"git.garena.com/shopee/listing/common/utkit/internal/config"
-	"git.garena.com/shopee/listing/common/utkit/internal/util"
+	"github.com/robertsong9972/utkit/internal/config"
+	"github.com/robertsong9972/utkit/internal/util"
 )
 
 type calculator struct {

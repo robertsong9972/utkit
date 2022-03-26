@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"git.garena.com/shopee/listing/common/utkit/internal/config"
-	"git.garena.com/shopee/listing/common/utkit/internal/core"
-	"git.garena.com/shopee/listing/common/utkit/internal/model"
+	"github.com/robertsong9972/utkit/internal/config"
+	"github.com/robertsong9972/utkit/internal/core"
+	"github.com/robertsong9972/utkit/internal/model"
 )
 
 type conf struct {
@@ -37,4 +37,3 @@ func parseFlag(cfg *conf) {
 	pflag.StringVar(&cfg.confPath, "conf_path", "", "json file include packages need to calculate")
 	pflag.Parse()
 }
-

@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"git.garena.com/shopee/listing/common/utkit/internal/config"
+	"github.com/robertsong9972/utkit/internal/config"
 )
 
 func TestGetPackageName(t *testing.T) {

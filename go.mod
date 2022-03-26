@@ -1,4 +1,4 @@
-module git.garena.com/shopee/listing/common/utkit
+module github.com/robertsong9972/utkit
 
 go 1.16
 

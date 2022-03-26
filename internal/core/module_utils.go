@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"git.garena.com/shopee/listing/common/utkit/internal/config"
-	"git.garena.com/shopee/listing/common/utkit/internal/util"
+	"github.com/robertsong9972/utkit/internal/config"
+	"github.com/robertsong9972/utkit/internal/util"
 )
 
 func LoadOrCreateConf() {

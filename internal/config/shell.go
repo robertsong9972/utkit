@@ -20,7 +20,7 @@ go mod tidy
 `
 
 const RunTest = `
-go test -cover ./... -coverprofile=localfiles/cover.out
+go test -cover ./... -gcflags=all=-l -coverprofile=localfiles/cover.out
 gocov convert localfiles/cover.out | gocov-xml > localfiles/coverage.xml
 `
 
