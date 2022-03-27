@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/robertsong9972/utkit/internal/core"
 	"log"
 
 	"github.com/spf13/pflag"
 
 	"github.com/robertsong9972/utkit/internal/config"
-	"github.com/robertsong9972/utkit/internal/core"
 	"github.com/robertsong9972/utkit/internal/model"
 )
 
@@ -27,7 +27,7 @@ func main() {
 		config.ConfPath = cfg.confPath
 		log.Println("conf_path is empty, will use default conf file in testdata/ut_package.json")
 	}
-	core.CheckGitIgnore()
+	core.SysInit()
 	calculator := model.NewCalculator()
 	calculator.PrintCovResult()
 }

@@ -2,7 +2,6 @@ package config
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -32,7 +31,7 @@ func InitConf() {
 		panic(err)
 	}
 	RootPath = rootPath
-	ConfPath = fmt.Sprintf("%s/%s", rootPath, ConfFileName)
+	ConfPath = ConfFileName
 	loadModuleName()
 }
 
@@ -51,5 +50,4 @@ func loadModuleName() {
 	line, err := rd.ReadString('\n')
 	line = strings.Trim(line, "\n")
 	ModuleName = strings.Split(line, " ")[1]
-	println(123)
 }

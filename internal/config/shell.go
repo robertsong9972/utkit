@@ -1,9 +1,5 @@
 package config
 
-const IncreaseDiffCalScript = `
-diff-cover localfiles/coverage.xml --compare-branch=origin/master --html-report localfiles/report.html
-`
-
 const IncreasePrepareScript = `
 if ! command -v gocov; then
   echo "Install gocov"
@@ -21,11 +17,14 @@ go mod tidy
 
 const RunTest = `
 go test -cover ./... -gcflags=all=-l -coverprofile=localfiles/cover.out
+`
+
+const GenerateXml = `
 gocov convert localfiles/cover.out | gocov-xml > localfiles/coverage.xml
 `
 
-const WeightCalShellScript = `
-go test -cover ./... -gcflags=all=-l
+const IncreaseDiffCalScript = `
+diff-cover localfiles/coverage.xml --compare-branch=origin/master --html-report localfiles/report.html
 `
 
 const MakeGitIgnoreFile = `
