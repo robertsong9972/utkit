@@ -15,8 +15,7 @@ type conf struct {
 }
 
 func main() {
-	config.InitConfig()
-	core.InitModuleName()
+	config.InitConf()
 	defer func() {
 		if err := recover(); err != nil {
 			log.Fatal(err)
@@ -28,7 +27,7 @@ func main() {
 		config.ConfPath = cfg.confPath
 		log.Println("conf_path is empty, will use default conf file in testdata/ut_package.json")
 	}
-	core.LoadOrCreateConf()
+	core.CheckGitIgnore()
 	calculator := model.NewCalculator()
 	calculator.PrintCovResult()
 }

@@ -2,15 +2,18 @@ package model
 
 import (
 	"bufio"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/robertsong9972/utkit/internal/core"
+	"github.com/robertsong9972/utkit/internal/util"
 	"io"
+	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/robertsong9972/utkit/internal/config"
-	"github.com/robertsong9972/utkit/internal/util"
+	"github.com/robertsong9972/utkit/internal/core"
 )
 
 type calculator struct {
@@ -22,7 +25,7 @@ func NewCalculator() *calculator {
 
 func (c *calculator) PrintCovResult() {
 	c.printIncrementCovRate()
-	rate := c.getWeightedCovRate()
+	rate := c.totalWgCovRate()
 	printPackages()
 	printCoverageRate(rate)
 }
@@ -43,60 +46,44 @@ func (c *calculator) printIncrementCovRate() {
 	}
 }
 
-func (c *calculator) getWeightedCovRate() float64 {
+func (c *calculator) totalWgCovRate() float64 {
 	sum := 0.0
-	lineCount := 1e-11
-	for _, v := range config.PackageMap {
-		packLineCount := c.getPackageLines(v.PackagePath)
-		sum += v.CoverageRate * packLineCount
-		lineCount += packLineCount
+	totalStat := 1e-11
+	cvrPath := "./localfiles/cover.out"
+	file, err := os.Open(cvrPath)
+	if err != nil {
+		log.Fatalf("failed to load cover.out, are you sure ./localfiles/cover.out exit?")
 	}
-	return sum / lineCount
-}
-
-func (c *calculator) getPackageLines(path string) float64 {
-	lineCount := 1e-11
-	files, err := os.ReadDir(path)
-	util.AssertError(err)
-	return lineCount + c.traversePackage(files, path)
-}
-
-func (c *calculator) traversePackage(files []os.DirEntry, packagePath string) float64 {
-	count := 0.0
-	for _, file := range files {
-		if config.TestFileReg.MatchString(file.Name()) || file.IsDir() {
-			continue
-		}
-		goFile, err := os.Open(fmt.Sprintf("%s/%s", packagePath, file.Name()))
-		util.AssertError(err)
-		rd := bufio.NewReader(goFile)
-		count += c.traverseFile(rd)
-	}
-	return count
-}
-
-func (c *calculator) traverseFile(reader *bufio.Reader) float64 {
-	count := 0.0
-	start := false
-	for {
-		line, err := reader.ReadString('\n')
+	rd := bufio.NewReader(file)
+	var lineIdx int
+	for ; ; lineIdx++ {
+		line, err := rd.ReadString('\n')
 		if err != nil || io.EOF == err {
 			break
 		}
-		if !start {
-			start = config.FunctionReg.MatchString(line)
+		if lineIdx == 0 {
 			continue
 		}
-		line = strings.Trim(line, " ")
-		if line == "\n" || config.EmptyReg.MatchString(line) {
-			continue
+		statCnt, isCovered := c.cutCoverLine(line)
+		totalStat += float64(statCnt)
+		if isCovered {
+			sum += float64(statCnt)
 		}
-		count++
 	}
-	if start {
-		count++
+	return sum * 100 / totalStat
+}
+
+func (c *calculator) cutCoverLine(line string) (int64, bool) {
+	stat := strings.Split(line, " ")
+	statCnt, err := strconv.ParseInt(stat[1], 10, 64)
+	if err != nil {
+		log.Fatalf("error when parse line statement count,err=%v", err)
 	}
-	return count
+	cvr, err := strconv.ParseInt(strings.Trim(stat[2], "\n"), 10, 64)
+	if err != nil {
+		log.Fatalf("error when parse line covered flag,err=%v", err)
+	}
+	return statCnt, cvr > 0
 }
 
 func printPackages() {
@@ -105,6 +92,33 @@ func printPackages() {
 		fmt.Printf("package:%s/%s\n", config.ModuleName, k)
 	}
 }
+
 func printCoverageRate(rate float64) {
-	fmt.Printf("The weighted average coverage: %.1f%% of statements\n", rate)
+	fmt.Printf("The weighted average coverage: %.2f%% of statements\n", rate)
+}
+
+func genConfFile() {
+	m := make(map[string][]string)
+	packages := make([]string, 0, len(config.PackageMap))
+	for k := range config.PackageMap {
+		packages = append(packages, k)
+	}
+	m["packages"] = packages
+	_, err := os.Stat(config.ConfDir)
+	if os.IsNotExist(err) {
+		err = os.Mkdir(config.ConfDir, 0777)
+		util.AssertError(err)
+	}
+	file, err := os.Create(config.ConfPath)
+	util.AssertError(err)
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(file)
+	buf, err := json.Marshal(m)
+	util.AssertError(err)
+	_, err = file.Write(buf)
+	util.AssertError(err)
 }
